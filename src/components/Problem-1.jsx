@@ -1,18 +1,51 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import TableData from "./TableData";
 
 const Problem1 = () => {
-  const [show, setShow] = useState("all");
+  const [allData, setAllData] = useState([]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const form = event.target;
     const name = form.name.value;
     const status = form.status.value;
+    const data = { name, status };
     console.log(name, status);
+
+    fetch("http://localhost:5000/alldata", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.insertedId) {
+          alert("Insert a Data Successfully");
+          form.reset();
+        }
+      });
   };
 
+  useEffect(() => {
+    fetch("http://localhost:5000/alldata")
+      .then((res) => res.json())
+      .then((data) => {
+        setAllData(data);
+      });
+  }, []);
+
+  const [show, setShow] = useState(allData);
+  //   console.log(allData);
+  const handleAllData = () => {
+    setShow(allData);
+  };
   const handleClick = (val) => {
-    setShow(val);
+    console.log(val);
+    const CategoryData = allData.filter((data) => data.status === val);
+    setShow(CategoryData);
+    console.log(show);
   };
 
   return (
@@ -53,7 +86,7 @@ const Problem1 = () => {
               <button
                 className={`nav-link ${show === "all" && "active"}`}
                 type="button"
-                onClick={() => handleClick("all")}
+                onClick={handleAllData}
               >
                 All
               </button>
@@ -62,7 +95,7 @@ const Problem1 = () => {
               <button
                 className={`nav-link ${show === "active" && "active"}`}
                 type="button"
-                onClick={() => handleClick("active")}
+                onClick={() => handleClick("Active")}
               >
                 Active
               </button>
@@ -71,7 +104,7 @@ const Problem1 = () => {
               <button
                 className={`nav-link ${show === "completed" && "active"}`}
                 type="button"
-                onClick={() => handleClick("completed")}
+                onClick={() => handleClick("Completed")}
               >
                 Completed
               </button>
@@ -85,7 +118,9 @@ const Problem1 = () => {
                 <th scope="col">Status</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            {show.map((data) => (
+              <TableData key={data._id} data={data}></TableData>
+            ))}
           </table>
         </div>
       </div>
