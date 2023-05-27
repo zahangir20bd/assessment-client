@@ -143,7 +143,10 @@ const Problem2 = () => {
                 Close
               </button>
               <button type="button" class="btn btn-primary">
-                Save changes
+                All Contacts
+              </button>
+              <button type="button" class="btn btn-warning">
+                US Contacts
               </button>
             </div>
           </div>
